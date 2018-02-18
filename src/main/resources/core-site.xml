@@ -1,0 +1,25 @@
+<configuration>
+    <property>
+        <name>fs.s3.impl</name>
+        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
+    </property>
+    <property>
+        <name>fs.s3a.buffer.dir</name>
+        <value>/tmp</value>
+    </property>
+
+    <property>
+        <name>fs.s3a.access.key</name>
+        <value>xxxxx</value>
+    </property>
+    <property>
+        <name>fs.s3a.secret.key</name>
+        <value>xxxxx</value>
+    </property>
+
+    <property>
+        <!-- probably with hdfs installation it won't be needed -->
+        <name>fs.s3a.buffer.dir</name>
+        <value>/tmp</value>
+    </property>
+</configuration>
