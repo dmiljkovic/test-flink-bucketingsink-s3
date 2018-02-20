@@ -23,6 +23,8 @@
         <elasticsearch.major.version>5</elasticsearch.major.version>
         <hadoop.version>2.7.3</hadoop.version>
         <logback.version>1.2.3</logback.version>
+        <aws.java.sdk.version>1.11.280</aws.java.sdk.version>
+        <!--<aws.java.sdk.version>1.11.183</aws.java.sdk.version>-->
     </properties>
 
     <!--
@@ -240,17 +242,17 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.183</version>
+            <version>${aws.java.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
-            <version>1.11.183</version>
+            <version>${aws.java.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-kms</artifactId>
-            <version>1.11.183</version>
+            <version>${aws.java.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
