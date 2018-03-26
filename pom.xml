@@ -2,10 +2,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>acme</groupId>
-    <artifactId>test-write-s3</artifactId>
+    <artifactId>test-s3-bucketing-sink</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <name>test-write-s3</name>
+    <version>1.0-alpha</version>
+    <name>test-s3-bucketing-sink</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -18,13 +18,11 @@
         <kafka.version>0.11.0.1-cp1</kafka.version>
         <kafka.avro.serializer.version>3.3.1</kafka.avro.serializer.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <flink.version>1.4.1</flink.version>
-        <eventbus.model.version>1.0.351-3804201d</eventbus.model.version>
+        <flink.version>1.4.2</flink.version>
         <elasticsearch.major.version>5</elasticsearch.major.version>
-        <hadoop.version>2.7.3</hadoop.version>
+        <hadoop.version>2.7.2</hadoop.version>
         <logback.version>1.2.3</logback.version>
-        <aws.java.sdk.version>1.11.280</aws.java.sdk.version>
-        <!--<aws.java.sdk.version>1.11.183</aws.java.sdk.version>-->
+        <fasterxml.version>2.7.4</fasterxml.version>
     </properties>
 
     <!--
@@ -67,12 +65,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.2</version>
+            <version>${fasterxml.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.2</version>
+            <version>${fasterxml.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -99,12 +97,12 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.4.4</version>
+            <version>4.4.8</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
+            <version>4.5.4</version>
         </dependency>
 
         <!-- fllink -->
@@ -120,9 +118,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <!--<artifactId>flink-connector-kafka-0.9_${scala.version}</artifactId> -->
-            <!--<artifactId>flink-connector-kafka-0.8_2.10</artifactId> -->
-            <!--<artifactId>flink-connector-kafka-0.10_${scala.binary.version}</artifactId>-->
             <artifactId>flink-connector-kafka-0.11_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
@@ -215,75 +210,28 @@
         </dependency>
 
         <!-- S3 -->
-
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-aws</artifactId>
             <version>${hadoop.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${hadoop.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs</artifactId>
             <version>${hadoop.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-filesystem_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>${aws.java.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-core</artifactId>
-            <version>${aws.java.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-kms</artifactId>
-            <version>${aws.java.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.6.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.6.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.6.7</version>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.8.1</version>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
 
     </dependencies>
 
@@ -378,6 +326,10 @@
                             </execution>
                         </executions>
                     </plugin>
+
+
+
+
                 </plugins>
             </build>
         </profile>
@@ -499,12 +451,12 @@
                             </filters>
                             <!-- If you want to use ./bin/flink run <quickstart jar> uncomment the following lines.
                             This will add a Main-Class entry to the manifest file -->
-                            <!--<transformers>
+                            <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass></mainClass>
+                                    <mainClass>com.acme.s3write.Write2S3</mainClass>
                                 </transformer>
-                            </transformers>-->
+                            </transformers>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
@@ -535,67 +487,5 @@
                 </executions>
             </plugin>
         </plugins>
-
-        <!-- If you want to use Java 8 Lambda Expressions uncomment the following lines -->
-        <!--
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                        <compilerId>jdt</compilerId>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.eclipse.tycho</groupId>
-                            <artifactId>tycho-compiler-jdt</artifactId>
-                            <version>0.21.0</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <artifactId>maven-assembly-plugin</artifactId>
-                                        <versionRange>[2.4,)</versionRange>
-                                        <goals>
-                                            <goal>single</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore/>
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <artifactId>maven-compiler-plugin</artifactId>
-                                        <versionRange>[3.1,)</versionRange>
-                                        <goals>
-                                            <goal>testCompile</goal>
-                                            <goal>compile</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore/>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        -->
     </build>
 </project>
